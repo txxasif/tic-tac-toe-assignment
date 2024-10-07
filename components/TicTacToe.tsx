@@ -4,11 +4,6 @@ import { translationAndLanguageStore } from "@/store/store";
 import { calculateWinner } from "@/helper/helper";
 import { Square } from "./3d";
 import { ILanguage } from "@/types/types";
-
-// Translations
-
-// Outside React component translation helper
-
 const TicTacToe = () => {
   const {
     board,
@@ -21,10 +16,7 @@ const TicTacToe = () => {
     handleReset,
   } = translationAndLanguageStore();
 
-  // Inside render translation (using state)
-
   useEffect(() => {
-    // Internationalization in console
     console.log(`Game language changed to: ${language}`);
     console.log(`Current title: ${getTranslation("title")}`);
   }, [language, getTranslation]);
