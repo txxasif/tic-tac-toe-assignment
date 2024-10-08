@@ -1,6 +1,3 @@
-Got it! Here’s the updated explanation including the live project link in the requested format:
-
----
 
 # Tic Tac Toe using Next.js, Three.js, and React-Three-Fiber
 
