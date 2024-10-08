@@ -1,10 +1,11 @@
-import React, { useRef } from "react";
+import React, { Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { X } from "./Models";
 import { O } from "./Models";
 import * as THREE from "three";
 import { ticTacToeStore } from "@/store/store";
+import CanvasLoader from "./Loader";
 
 interface SquareProps {
   value: string | null;
@@ -67,11 +68,6 @@ export function Square({ value, onClick, index }: SquareProps) {
   return (
     <div className={className} onClick={onClick}>
       <Canvas shadows>
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate={true}
-        />
         {value === "X" ? (
           <Environment preset="apartment" />
         ) : value === "O" ? (
@@ -79,9 +75,23 @@ export function Square({ value, onClick, index }: SquareProps) {
         ) : null}
         <Lights />
         {value === "X" ? (
-          <X isRotating={shouldRotate} scale={scale} />
+          <Suspense fallback={<CanvasLoader />}>
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              enableRotate={true}
+            />
+            <X isRotating={shouldRotate} scale={scale} />
+          </Suspense>
         ) : value === "O" ? (
-          <O isRotating={shouldRotate} scale={scale} />
+          <Suspense fallback={<CanvasLoader />}>
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              enableRotate={true}
+            />
+            <O isRotating={shouldRotate} scale={scale} />
+          </Suspense>
         ) : null}
       </Canvas>
     </div>
