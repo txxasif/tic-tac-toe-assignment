@@ -1,33 +1,74 @@
-import React, { useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, SpotLight } from "@react-three/drei";
+import React, { useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment, OrbitControls } from "@react-three/drei";
 import XModel from "@/models/X-3D";
 import OModel from "@/models/O-3D";
+import * as THREE from "three";
+import { ticTacToeStore } from "@/store/store";
 
 interface SquareProps {
   value: string | null;
   onClick: () => void;
   index: number;
+  isWinningSquare?: boolean;
 }
 
-function XXModel(): JSX.Element {
+function Lights() {
+  const spotLightRef = useRef<THREE.SpotLight>(null);
+
   return (
-    <mesh>
-      <XModel color="blue" scale={1.5} />
+    <>
+      <ambientLight intensity={0.5} />
+      <spotLight
+        ref={spotLightRef}
+        position={[5, 5, 5]}
+        angle={1.5}
+        penumbra={1}
+        intensity={1}
+        castShadow
+      />
+      <pointLight position={[-5, 0, -5]} intensity={0.5} />
+    </>
+  );
+}
+function XXModel({
+  isRotating,
+}: {
+  isRotating?: boolean;
+  color?: string;
+}): JSX.Element {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state, delta) => {
+    if (isRotating && meshRef.current) {
+      meshRef.current.rotation.y += delta;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <XModel scale={1.5} />
     </mesh>
   );
 }
 
-function OOModel(): JSX.Element {
+function OOModel({ isRotating = false }): JSX.Element {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state, delta) => {
+    if (isRotating && meshRef.current) {
+      meshRef.current.rotation.y += delta;
+    }
+  });
+
   return (
-    <mesh>
+    <mesh ref={meshRef}>
       <OModel scale={1.5} />
     </mesh>
   );
 }
 
 export function Square({ value, onClick, index }: SquareProps): JSX.Element {
-  const [lightIntensity] = useState(100);
   const className = `w-[100px] h-[100px] border-[#0DA192] ${
     index === 0
       ? "border-r-4 border-b-4"
@@ -47,23 +88,29 @@ export function Square({ value, onClick, index }: SquareProps): JSX.Element {
       ? "border-l-4 border-t-4"
       : ""
   }`;
+  const { isDraw, winingIndexes } = ticTacToeStore();
+  console.log(winingIndexes, "winnig indexes");
+  console.log(isDraw, "is draw");
 
   return (
     <div className={className} onClick={onClick}>
-      <Canvas>
+      <Canvas shadows>
         <OrbitControls
           enableZoom={false}
           enablePan={false}
           enableRotate={true}
         />
-        <SpotLight
-          intensity={lightIntensity}
-          position={[0, 0, 0]}
-          angle={0.15}
-          penumbra={1}
-        />
-        {value === "X" && <XXModel />}
-        {value === "O" && <OOModel />}
+        {value === "X" ? (
+          <Environment preset="apartment" />
+        ) : value === "O" ? (
+          <Environment preset="night" />
+        ) : null}
+        <Lights />
+        {value === "X" ? (
+          <XXModel isRotating={!isDraw} />
+        ) : value === "O" ? (
+          <OOModel isRotating={!isDraw} />
+        ) : null}
       </Canvas>
     </div>
   );

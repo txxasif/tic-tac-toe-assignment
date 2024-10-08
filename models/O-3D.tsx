@@ -30,8 +30,8 @@ export default function OModel({
         receiveShadow
         geometry={nodes.Mesh1.geometry}
         material={nodes.Mesh1.material}
-      />
-      <meshBasicMaterial color={color} />
+      />{" "}
+      <meshStandardMaterial color={color} metalness={0.6} roughness={0.2} />
     </group>
   );
 }

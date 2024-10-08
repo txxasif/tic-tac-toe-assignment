@@ -15,11 +15,9 @@ type GLTFResult = GLTF & {
 };
 
 export default function XModel({
-  color,
   scale,
   ...props
 }: JSX.IntrinsicElements["group"] & {
-  color?: string;
   scale?: number;
 }) {
   const { nodes } = useGLTF("/models/X.glb") as GLTFResult;
@@ -31,7 +29,6 @@ export default function XModel({
         geometry={nodes.Mesh1.geometry}
         material={nodes.Mesh1.material}
       />
-      <meshBasicMaterial color={color} />
     </group>
   );
 }

@@ -1,47 +1,39 @@
 "use client";
 import React, { useEffect } from "react";
-import { translationAndLanguageStore } from "@/store/store";
-import { calculateWinner } from "@/helper/helper";
+import { ticTacToeStore } from "@/store/store";
+
 import { Square } from "./3d";
 import { ILanguage } from "@/types/types";
 const TicTacToe = () => {
   const {
     board,
-    setBoard,
-    xIsNext,
-    setXIsNext,
+    setStatus,
+    status,
     language,
     setLanguage,
     getTranslation,
     handleReset,
-  } = translationAndLanguageStore();
+    winner,
+    isDraw,
+    xIsNext,
+    calculateWinnerX,
+  } = ticTacToeStore();
 
   useEffect(() => {
     console.log(`Game language changed to: ${language}`);
     console.log(`Current title: ${getTranslation("title")}`);
-  }, [language, getTranslation]);
+    if (winner !== null) {
+      setStatus(`${getTranslation("winner")}: ${winner}`);
+    } else if (isDraw) {
+      setStatus(getTranslation("draw"));
+    } else {
+      setStatus(`${getTranslation("nextPlayer")}: ${xIsNext ? "X" : "O"}`);
+    }
+  }, [language, getTranslation, winner, isDraw, xIsNext, setStatus]);
 
   const handleClick = (i: number) => {
-    if (calculateWinner(board) !== null || board[i] !== null) return;
-
-    const newBoard = board.slice();
-    newBoard[i] = xIsNext ? "X" : "O";
-    setBoard(newBoard);
-    setXIsNext(!xIsNext);
+    calculateWinnerX(i);
   };
-
-  const winner = calculateWinner(board);
-  const isDraw = !winner && board.every((square) => square !== null);
-
-  let status;
-  if (winner !== null) {
-    status = `${getTranslation("winner")}: ${winner}`;
-  } else if (isDraw) {
-    status = getTranslation("draw");
-  } else {
-    status = `${getTranslation("nextPlayer")}: ${xIsNext ? "X" : "O"}`;
-  }
-
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div>
