@@ -67,7 +67,7 @@ export function Square({ value, onClick, index }: SquareProps) {
 
   return (
     <div className={className} onClick={onClick}>
-      <Canvas shadows>
+      <Canvas>
         <OrbitControls
           enableZoom={false}
           enablePan={false}
