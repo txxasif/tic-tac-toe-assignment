@@ -68,6 +68,11 @@ export function Square({ value, onClick, index }: SquareProps) {
   return (
     <div className={className} onClick={onClick}>
       <Canvas shadows>
+        <OrbitControls
+          enableZoom={false}
+          enablePan={false}
+          enableRotate={false}
+        />
         {value === "X" ? (
           <Environment preset="apartment" />
         ) : value === "O" ? (
@@ -76,20 +81,10 @@ export function Square({ value, onClick, index }: SquareProps) {
         <Lights />
         {value === "X" ? (
           <Suspense fallback={<CanvasLoader />}>
-            <OrbitControls
-              enableZoom={false}
-              enablePan={false}
-              enableRotate={true}
-            />
             <X isRotating={shouldRotate} scale={scale} />
           </Suspense>
         ) : value === "O" ? (
           <Suspense fallback={<CanvasLoader />}>
-            <OrbitControls
-              enableZoom={false}
-              enablePan={false}
-              enableRotate={true}
-            />
             <O isRotating={shouldRotate} scale={scale} />
           </Suspense>
         ) : null}
