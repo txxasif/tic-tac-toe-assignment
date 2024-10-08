@@ -93,11 +93,7 @@ export function Square({ value, onClick, index }: SquareProps) {
   return (
     <div className={className} onClick={onClick}>
       {value && (
-        <Canvas
-          style={{ width: "100%", height: "100%" }}
-          performance={{ min: 0.1 }}
-          onCreated={handleCanvasCreated}
-        >
+        <Canvas performance={{ min: 0.1 }} onCreated={handleCanvasCreated}>
           <OrbitControls
             enableZoom={false}
             enablePan={false}
@@ -113,11 +109,6 @@ export function Square({ value, onClick, index }: SquareProps) {
             />
           </Suspense>
         </Canvas>
-      )}
-      {!isLoaded && retryCount >= 3 && (
-        <div className="flex items-center justify-center w-full h-full text-4xl">
-          {value}
-        </div>
       )}
     </div>
   );
