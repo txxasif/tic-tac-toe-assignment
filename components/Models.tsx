@@ -4,8 +4,10 @@ import { useFrame } from "@react-three/fiber";
 // import XModel from "@/models/X-3D";
 // import OModel from "@/models/O-3D";
 import * as THREE from "three";
-import { XXModel } from "@/models/XX-3D";
-import { OOModel } from "@/models/OO-3D";
+// import { XXModel } from "@/models/XX-3D";
+// import { OOModel } from "@/models/OO-3D";
+import XModel from "@/models/X-3D";
+import OModel from "@/models/O-3D";
 
 export function X({
   isRotating,
@@ -29,7 +31,7 @@ export function X({
 
   return (
     <mesh ref={meshRef}>
-      <XXModel scale={scale} />
+      <XModel scale={scale} />
     </mesh>
   );
 }
@@ -54,7 +56,7 @@ export function O({
 
   return (
     <mesh ref={meshRef}>
-      <OOModel scale={scale} />
+      <OModel scale={scale} />
     </mesh>
   );
 }

@@ -1,9 +1,8 @@
-import React, { Suspense, useRef } from "react";
+import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { X } from "./Models";
 import { O } from "./Models";
-import * as THREE from "three";
 import { ticTacToeStore } from "@/store/store";
 import CanvasLoader from "./Loader";
 
@@ -11,25 +10,6 @@ interface SquareProps {
   value: string | null;
   onClick: () => void;
   index: number;
-}
-
-function Lights() {
-  const spotLightRef = useRef<THREE.SpotLight>(null);
-
-  return (
-    <>
-      <ambientLight intensity={0.5} />
-      <spotLight
-        ref={spotLightRef}
-        position={[5, 5, 5]}
-        angle={1.5}
-        penumbra={1}
-        intensity={1}
-        castShadow
-      />
-      <pointLight position={[-5, 0, -5]} intensity={0.5} />
-    </>
-  );
 }
 
 export function Square({ value, onClick, index }: SquareProps) {
@@ -53,42 +33,61 @@ export function Square({ value, onClick, index }: SquareProps) {
       : ""
   }`;
   const { isDraw, winingIndexes } = ticTacToeStore();
-  console.log(winingIndexes, "winnig indexes");
-  console.log(isDraw, "is draw");
   const scale = winingIndexes?.includes(index) ? 2.5 : 1.5;
-  let shouldRotate = true;
-  if (isDraw) {
-    shouldRotate = false;
-  } else if (winingIndexes) {
-    if (!winingIndexes.includes(index)) {
-      shouldRotate = false;
-    }
-  }
+  const shouldRotate = isDraw
+    ? false
+    : winingIndexes
+    ? winingIndexes.includes(index)
+    : true;
 
   return (
     <div className={className} onClick={onClick}>
-      <Canvas>
+      <Canvas
+        gl={{
+          powerPreference: "high-performance",
+          antialias: true,
+          alpha: true,
+        }}
+        dpr={[1, 2]} // Limit pixel ratio for better performance
+        style={{ width: "100%", height: "100%" }}
+      >
         <OrbitControls
           enableZoom={false}
           enablePan={false}
           enableRotate={false}
         />
-        {value === "X" ? (
-          <Environment preset="apartment" />
-        ) : value === "O" ? (
-          <Environment preset="night" />
-        ) : null}
-        <Lights />
-        {value === "X" ? (
-          <Suspense fallback={<CanvasLoader />}>
-            <X isRotating={shouldRotate} scale={scale} />
-          </Suspense>
-        ) : value === "O" ? (
-          <Suspense fallback={<CanvasLoader />}>
-            <O isRotating={shouldRotate} scale={scale} />
-          </Suspense>
-        ) : null}
+
+        <Suspense fallback={<CanvasLoader />}>
+          <Lights />
+          {value === "X" ? (
+            <>
+              <Environment preset="apartment" />
+              <X isRotating={shouldRotate} scale={scale} />
+            </>
+          ) : value === "O" ? (
+            <>
+              <Environment preset="night" />
+              <O isRotating={shouldRotate} scale={scale} />
+            </>
+          ) : null}
+        </Suspense>
       </Canvas>
     </div>
+  );
+}
+
+function Lights() {
+  return (
+    <>
+      <ambientLight intensity={0.5} />
+      <spotLight
+        position={[5, 5, 5]}
+        angle={1.5}
+        penumbra={1}
+        intensity={1}
+        castShadow
+      />
+      <pointLight position={[-5, 0, -5]} intensity={0.5} />
+    </>
   );
 }
