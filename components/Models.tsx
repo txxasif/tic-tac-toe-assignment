@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
-import XModel from "@/models/X-3D";
-import OModel from "@/models/O-3D";
+// import XModel from "@/models/X-3D";
+// import OModel from "@/models/O-3D";
 import * as THREE from "three";
 import { XXModel } from "@/models/XX-3D";
 import { OOModel } from "@/models/OO-3D";
