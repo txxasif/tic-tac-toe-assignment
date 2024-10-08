@@ -1,13 +1,10 @@
-import React, { Suspense, useRef } from "react";
+import React, { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { X, O } from "./Models";
 import * as THREE from "three";
 import { ticTacToeStore } from "@/store/store";
 import CanvasLoader from "./Loader";
-
-// Detect mobile device
-const isMobile = () => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 interface SquareProps {
   value: string | null;
@@ -34,7 +31,45 @@ function Lights() {
   );
 }
 
+interface ModelWrapperProps {
+  value: "X" | "O";
+  scale: number;
+  shouldRotate: boolean;
+}
+const ModelWrapper: React.FC<ModelWrapperProps> = ({
+  value,
+  scale,
+  shouldRotate,
+}) => {
+  if (value === "X") {
+    return <X isRotating={shouldRotate} scale={scale} />;
+  } else if (value === "O") {
+    return <O isRotating={shouldRotate} scale={scale} />;
+  }
+  return null;
+};
+
 export function Square({ value, onClick, index }: SquareProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const { isDraw, winingIndexes } = ticTacToeStore();
+  const scale = winingIndexes?.includes(index) ? 2.5 : 1.5;
+  const shouldRotate =
+    !isDraw && (!winingIndexes || winingIndexes.includes(index));
+
+  useEffect(() => {
+    if (!isLoaded && retryCount < 3) {
+      const timer = setTimeout(() => {
+        setRetryCount((prev) => prev + 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded, retryCount]);
+
+  const handleCanvasCreated = () => {
+    setIsLoaded(true);
+  };
+
   const className = `w-[100px] h-[100px] border-[#0DA192] ${
     index === 0
       ? "border-r-4 border-b-4"
@@ -55,49 +90,35 @@ export function Square({ value, onClick, index }: SquareProps) {
       : ""
   }`;
 
-  const { isDraw, winingIndexes } = ticTacToeStore();
-  const scale = winingIndexes?.includes(index) ? 2.0 : 1.5;
-  const shouldRotate = !isDraw && winingIndexes?.includes(index) && !isMobile();
-
   return (
-    <div
-      className={`${className} flex items-center justify-center`}
-      onClick={onClick}
-    >
-      <Canvas
-        style={{ width: "100%", height: "100%" }}
-        performance={{ min: 0.5, max: 1 }}
-      >
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate={false}
-        />
-        {value === "X" ? (
-          <Environment preset="apartment" />
-        ) : value === "O" ? (
-          <Environment preset="night" />
-        ) : null}
-        <Lights />
-        {value === "X" ? (
+    <div className={className} onClick={onClick}>
+      {value && (
+        <Canvas
+          style={{ width: "100%", height: "100%" }}
+          performance={{ min: 0.1 }}
+          onCreated={handleCanvasCreated}
+        >
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            enableRotate={false}
+          />
+          <Environment preset={value === "X" ? "apartment" : "night"} />
+          <Lights />
           <Suspense fallback={<CanvasLoader />}>
-            <X isRotating={shouldRotate} scale={scale} />
+            <ModelWrapper
+              value={value as "X" | "O"}
+              scale={scale}
+              shouldRotate={shouldRotate}
+            />
           </Suspense>
-        ) : value === "O" ? (
-          <Suspense fallback={<CanvasLoader />}>
-            <O isRotating={shouldRotate} scale={scale} />
-          </Suspense>
-        ) : null}
-      </Canvas>
-    </div>
-  );
-}
-
-// For responsive grid layout, wrap Square components in a container:
-export function Board() {
-  return (
-    <div className="grid grid-cols-3 gap-4 w-full max-w-[300px] mx-auto">
-      {/* Render the squares here */}
+        </Canvas>
+      )}
+      {!isLoaded && retryCount >= 3 && (
+        <div className="flex items-center justify-center w-full h-full text-4xl">
+          {value}
+        </div>
+      )}
     </div>
   );
 }
