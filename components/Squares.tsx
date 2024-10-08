@@ -67,7 +67,10 @@ export function Square({ value, onClick, index }: SquareProps) {
 
   return (
     <div className={className} onClick={onClick}>
-      <Canvas>
+      <Canvas
+        style={{ width: "100%", height: "100%" }}
+        performance={{ min: 0.5, max: 1 }}
+      >
         <OrbitControls
           enableZoom={false}
           enablePan={false}
