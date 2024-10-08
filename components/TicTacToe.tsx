@@ -1,10 +1,12 @@
 "use client";
+
 import React, { useEffect } from "react";
 import { ticTacToeStore } from "@/store/store";
-
-import { Square } from "./3d";
+import { Globe } from "lucide-react";
+import { Square } from "./Squares";
 import { ILanguage } from "@/types/types";
-const TicTacToe = () => {
+
+export default function TicTacToe() {
   const {
     board,
     setStatus,
@@ -34,12 +36,18 @@ const TicTacToe = () => {
   const handleClick = (i: number) => {
     calculateWinnerX(i);
   };
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div>
-        <h1 className="text-center">{getTranslation("title")}</h1>
-        <div className="flex items-center gap-2">
-          <span>{getTranslation("language")}:</span>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-md rounded-lg shadow-lg text-white p-6 mb-8">
+        <h1 className="text-3xl font-bold text-center mb-6">
+          {getTranslation("title")}
+        </h1>
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <Globe className="w-6 h-6" />
+          <span className="text-lg font-medium">
+            {getTranslation("language")}:
+          </span>
           <select
             aria-label={getTranslation("language")}
             value={language}
@@ -47,14 +55,20 @@ const TicTacToe = () => {
               const selectedLanguage: ILanguage = e.target.value as ILanguage;
               setLanguage(selectedLanguage);
             }}
+            className="bg-white/20 text-white font-semibold py-2 px-4  cursor-pointer"
           >
-            <option value="en">English</option>
-            <option value="bn">Bangla</option>
+            <option value="en" className="bg-gray-700 text-white">
+              English
+            </option>
+            <option value="bn" className="bg-gray-700 text-white">
+              Bangla
+            </option>
           </select>
         </div>
+        <div className="text-center text-3xl font-semibold">{status}</div>
       </div>
-      <div>
-        <div className="text-center mb-4">{status}</div>
+
+      <div className="">
         <div className="grid grid-cols-3 mb-4">
           {board.map((square, i) => (
             <Square
@@ -65,12 +79,13 @@ const TicTacToe = () => {
             />
           ))}
         </div>
-        <button className="w-full" onClick={handleReset}>
+        <button
+          className="w-full bg-white/20 text-white font-bold py-3 px-6 rounded-md hover:bg-white/30 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+          onClick={handleReset}
+        >
           {getTranslation("restart")}
         </button>
       </div>
     </div>
   );
-};
-
-export default TicTacToe;
+}

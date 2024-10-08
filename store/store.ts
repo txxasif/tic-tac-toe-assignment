@@ -1,24 +1,7 @@
 import { create } from "zustand";
 import { translations, winningLines } from "./data";
-import { ILanguage } from "@/types/types";
+import { ILanguage, ITicTacToeStore } from "@/types/types";
 import { calculateWinner, getWiningIndex } from "@/helper/helper";
-
-interface ITicTacToeStore {
-  language: ILanguage;
-  board: Array<string | null>;
-  xIsNext: boolean;
-  isDraw?: boolean;
-  winner?: string | null;
-  status?: string;
-  winingIndexes?: Array<number> | null;
-  setXIsNext: (xIsNext: boolean) => void;
-  setLanguage: (lang: ILanguage) => void;
-  setStatus: (status: string) => void;
-  getTranslation: (key: string) => string;
-  handleReset: () => void;
-  calculateWinnerX: (index: number) => void;
-  setBoard: (board: Array<string | null>) => void;
-}
 
 const ticTacToeStore = create<ITicTacToeStore>((set, get) => ({
   language: "en",

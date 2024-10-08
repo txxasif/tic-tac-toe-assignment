@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
-import XModel from "@/models/X-3D";
-import OModel from "@/models/O-3D";
+import { X } from "./Models";
+import { O } from "./Models";
 import * as THREE from "three";
 import { ticTacToeStore } from "@/store/store";
 
@@ -10,7 +10,6 @@ interface SquareProps {
   value: string | null;
   onClick: () => void;
   index: number;
-  isWinningSquare?: boolean;
 }
 
 function Lights() {
@@ -31,44 +30,8 @@ function Lights() {
     </>
   );
 }
-function XXModel({
-  isRotating,
-}: {
-  isRotating?: boolean;
-  color?: string;
-}): JSX.Element {
-  const meshRef = useRef<THREE.Mesh>(null);
 
-  useFrame((state, delta) => {
-    if (isRotating && meshRef.current) {
-      meshRef.current.rotation.y += delta;
-    }
-  });
-
-  return (
-    <mesh ref={meshRef}>
-      <XModel scale={1.5} />
-    </mesh>
-  );
-}
-
-function OOModel({ isRotating = false }): JSX.Element {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state, delta) => {
-    if (isRotating && meshRef.current) {
-      meshRef.current.rotation.y += delta;
-    }
-  });
-
-  return (
-    <mesh ref={meshRef}>
-      <OModel scale={1.5} />
-    </mesh>
-  );
-}
-
-export function Square({ value, onClick, index }: SquareProps): JSX.Element {
+export function Square({ value, onClick, index }: SquareProps) {
   const className = `w-[100px] h-[100px] border-[#0DA192] ${
     index === 0
       ? "border-r-4 border-b-4"
@@ -91,6 +54,15 @@ export function Square({ value, onClick, index }: SquareProps): JSX.Element {
   const { isDraw, winingIndexes } = ticTacToeStore();
   console.log(winingIndexes, "winnig indexes");
   console.log(isDraw, "is draw");
+  const scale = winingIndexes?.includes(index) ? 2.5 : 1.5;
+  let shouldRotate = true;
+  if (isDraw) {
+    shouldRotate = false;
+  } else if (winingIndexes) {
+    if (!winingIndexes.includes(index)) {
+      shouldRotate = false;
+    }
+  }
 
   return (
     <div className={className} onClick={onClick}>
@@ -107,9 +79,9 @@ export function Square({ value, onClick, index }: SquareProps): JSX.Element {
         ) : null}
         <Lights />
         {value === "X" ? (
-          <XXModel isRotating={!isDraw} />
+          <X isRotating={shouldRotate} scale={scale} />
         ) : value === "O" ? (
-          <OOModel isRotating={!isDraw} />
+          <O isRotating={shouldRotate} scale={scale} />
         ) : null}
       </Canvas>
     </div>
